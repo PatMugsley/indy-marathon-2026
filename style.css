@@ -191,7 +191,7 @@ button.btn { font-family: inherit; border: 0; cursor: pointer; }
 
 /* Interactive course map */
 .course-map {
-  height: calc(100svh - 330px); min-height: 380px;
+  height: calc(100svh - 300px); min-height: 440px;
   border-radius: var(--radius); border: 1px solid var(--line);
   margin-bottom: 12px; background: #e8e8e8; z-index: 0;
 }

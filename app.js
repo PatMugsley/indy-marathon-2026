@@ -233,7 +233,7 @@
   }
   function initMap() {
     if (map || !window.L) return;
-    map = L.map("course-map", { zoomControl: true, tap: true });
+    map = L.map("course-map", { zoomControl: true, tap: true, zoomSnap: 0.25 });
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -253,7 +253,7 @@
     map.setView([39.815, -86.17], 12);
   }
   function fitCourse() {
-    map.fitBounds(L.latLngBounds(course.map(function (p) { return p.ll; })), { padding: [16, 16] });
+    map.fitBounds(L.latLngBounds(course.map(function (p) { return p.ll; })), { padding: [10, 10] });
   }
   function refreshMap() {
     if (!map) return;
