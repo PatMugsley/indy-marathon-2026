@@ -5,8 +5,10 @@ window.SITE = {
   courseCloses: "3:30 p.m.",
   timeZone: "America/Indiana/Indianapolis",
   defaultWaveStart: "08:15", // ESTIMATE: Wave F release time not yet published
-  finishOptions: ["4:40", "5:00", "5:30", "6:00", "6:30"],
-  defaultFinish: "5:30",
+  // Pace per mile. They're running together; Jill's long runs are ~10:40/mi.
+  earliestPace: "9:00",   // "as early as" time, so nobody misses them
+  defaultPace: "11:00",   // expected pace
+  paceOptions: ["10:30", "11:00", "11:30", "12:00"],
   trackingUrl: "https://track.rtrt.me/e/BM-MONUMENTAL-MARATHON-2026",
   spectatorInfoUrl: "https://monumentalmarathon.com/news-2/spectators-road-closures/",
 
@@ -24,7 +26,7 @@ window.SITE = {
   ],
 
   spots: [
-    { name: "Corral send-off", mile: 0, fixedTime: "~7:30 a.m.",
+    { name: "Corral send-off", mile: 0, fixedTime: "~7:30 a.m.", latlng: [39.7727, -86.1668],
       where: "West St & New York St", map: "West St & New York St, Indianapolis, IN",
       why: "Last hugs before the start. Wave F lines up farthest north on West St.",
       tags: ["Walkable from downtown"] },
@@ -98,7 +100,7 @@ window.SITE = {
       { time: "~7:30 a.m.", what: "Corral send-off", detail: "Runners head into the Wave F corral on West St, north of New York St." },
       { time: "8:00 a.m.", what: "Race starts", detail: "Wave F crosses the start line a few minutes later." },
       { time: "Morning", what: "Crew moves between spots", detail: "See the Spots tab for estimated times." },
-      { time: "~1–3 p.m.", what: "Finish", detail: "Washington St at Senate Ave, depending on pace." },
+      { time: "~1:05 p.m.", what: "Finish", detail: "Washington St at Senate Ave. That's at the expected 11:00/mi pace; it could be as early as 12:10 p.m." },
       { time: "3:30 p.m.", what: "Course closes", detail: "" }
     ]}
   ],

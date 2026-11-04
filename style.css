@@ -171,7 +171,7 @@ input[type="time"] {
 
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0;
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   background: var(--surface);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
@@ -179,8 +179,49 @@ input[type="time"] {
 }
 .tabbar a {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 60px; font-size: 13px; font-weight: 600;
+  min-height: 60px; font-size: 12px; font-weight: 600;
   color: var(--muted); text-decoration: none;
 }
 .tabbar .ico { font-size: 22px; line-height: 1.1; }
 .tabbar a[aria-current="page"] { color: var(--brand); }
+
+.ctl-help { font-size: 15px; color: var(--muted); }
+.spot-early { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+button.btn { font-family: inherit; border: 0; cursor: pointer; }
+
+/* Interactive course map */
+.course-map {
+  height: calc(100svh - 330px); min-height: 380px;
+  border-radius: var(--radius); border: 1px solid var(--line);
+  margin-bottom: 12px; background: #e8e8e8; z-index: 0;
+}
+.map-actions { margin-bottom: 14px; }
+.leaflet-container { font: inherit; }
+.pin {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #e8462b; color: #fff; border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4);
+  font-weight: 800; font-size: 14px; line-height: 1;
+}
+.pin.start { background: #1d3b72; }
+.pin.finish, .pin.runner { background: #fff; border-color: #16181d; font-size: 15px; }
+.pin.runner { border-color: #e8462b; }
+.mile-dot {
+  display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; color: #1d3b72; border: 2px solid #1d3b72;
+  font-size: 10px; font-weight: 800; line-height: 1;
+}
+.legend { list-style: none; padding: 0; }
+.legend li { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.legend-pin, .legend-dot { flex: none; position: static; }
+.leaflet-popup-content { margin: 12px 14px; color: #16181d; }
+.pop { min-width: 190px; }
+.pop-mile { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #5b6270; }
+.pop-name { font-size: 17px; font-weight: 800; line-height: 1.25; }
+.pop-time { font-size: 20px; font-weight: 800; color: #e8462b; margin-top: 2px; }
+.pop-time small { font-size: 12px; color: #5b6270; }
+.pop-early { font-size: 14px; font-weight: 700; }
+.pop-where { font-size: 14px; color: #5b6270; margin: 4px 0 8px; }
+.pop .btn { min-height: 40px; font-size: 15px; padding: 8px 14px; color: #fff; background: #1d3b72; }

@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#1d3b72">
 <title>Team Jill · Indy Marathon</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,7 +25,8 @@
         <span class="big-sub">Search Jill, Anne or Belle</span>
       </a>
       <a class="big-btn" href="#spots"><span class="big-label">Where to cheer</span><span class="big-sub">Spots & estimated times</span></a>
-      <a class="big-btn" href="#maps"><span class="big-label">Maps</span><span class="big-sub">Course, closures, parking</span></a>
+      <a class="big-btn" href="#map"><span class="big-label">Course map</span><span class="big-sub">See every spot on the route</span></a>
+      <a class="big-btn" href="#maps"><span class="big-label">Official maps</span><span class="big-sub">Closures, parking, race morning</span></a>
     </div>
     <div class="card meet" id="meet"></div>
     <h2>Race morning</h2>
@@ -33,11 +35,12 @@
 
   <section id="view-spots" class="view" hidden>
     <h2>Where to cheer</h2>
-    <div class="note"><strong>Times are estimates.</strong> They assume even pacing and the start time below. On race day, the tracking app is the best guide.</div>
+    <div class="note"><strong>Times are estimates.</strong> They assume the three run together at an even pace from the start time below. Plan to arrive by the “as early as” time. On race day, the tracking app is the best guide.</div>
     <div class="controls card">
       <div class="ctl">
-        <span class="ctl-label">Expected finish time</span>
-        <div class="chips" id="finish-chips" role="radiogroup" aria-label="Expected finish time"></div>
+        <span class="ctl-label">Expected pace (per mile)</span>
+        <div class="chips" id="pace-chips" role="radiogroup" aria-label="Expected pace per mile"></div>
+        <span class="ctl-help" id="pace-finish"></span>
       </div>
       <label class="ctl">
         <span class="ctl-label">Wave F starts at <small>(estimate)</small></span>
@@ -47,15 +50,31 @@
     <ul class="spot-list" id="spot-list"></ul>
   </section>
 
+  <section id="view-map" class="view" hidden>
+    <h2>Course map</h2>
+    <p class="lead">Tap a numbered pin for its estimated times. The blue line is the marathon route, traced by hand from the official map, so it's close but not exact.</p>
+    <div id="course-map" class="course-map" role="region" aria-label="Interactive course map"></div>
+    <div class="note" id="map-fallback" hidden>The map couldn't load. Check your connection, or use the <a href="#maps">official maps</a>.</div>
+    <div class="btn-row map-actions">
+      <button type="button" class="btn" id="locate-btn">Show where I am</button>
+      <button type="button" class="btn secondary" id="fit-btn">Whole course</button>
+    </div>
+    <ul class="legend plain">
+      <li><span class="pin legend-pin"><span>1</span></span> Cheer spot (numbers match the Spots tab)</li>
+      <li><span class="mile-dot legend-dot">5</span> Mile marker</li>
+      <li><span class="pin runner legend-pin"><span>🏃</span></span> On race day: roughly where the runners should be</li>
+    </ul>
+  </section>
+
   <section id="view-runners" class="view" hidden>
     <h2>Our runners</h2>
-    <p class="lead">All three are running the full marathon in <strong>Wave F</strong>.</p>
+    <p class="lead">All three are running the full marathon together in <strong>Wave F</strong>, at about 11 minutes a mile.</p>
     <div id="runner-list"></div>
     <div class="note">Tracking updates when runners cross timing mats (every few miles), not live GPS, so it lags a little. You can also use the official app: search <strong>“Beyond Monumental”</strong> in the App Store or Google Play.</div>
   </section>
 
   <section id="view-maps" class="view" hidden>
-    <h2>Maps</h2>
+    <h2>Official maps</h2>
     <p class="lead">Tap a map to open it full size, then pinch to zoom.</p>
     <div id="map-list"></div>
   </section>
@@ -76,12 +95,15 @@
 <nav class="tabbar" aria-label="Sections">
   <a href="#home" data-tab="home"><span class="ico" aria-hidden="true">⌂</span>Home</a>
   <a href="#spots" data-tab="spots"><span class="ico" aria-hidden="true">📣</span>Spots</a>
+  <a href="#map" data-tab="map"><span class="ico" aria-hidden="true">📍</span>Map</a>
   <a href="#runners" data-tab="runners"><span class="ico" aria-hidden="true">🏃</span>Runners</a>
-  <a href="#maps" data-tab="maps"><span class="ico" aria-hidden="true">🗺️</span>Maps</a>
+  <a href="#maps" data-tab="maps"><span class="ico" aria-hidden="true">🗺️</span>Official</a>
   <a href="#info" data-tab="info"><span class="ico" aria-hidden="true">ℹ︎</span>Info</a>
 </nav>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
+<script src="course.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -5,7 +5,8 @@ A phone-friendly page for the friends and family cheering on Jill, Anne and Bell
 This is a plain static site with no build step, published with GitHub Pages from the `main` branch root.
 
 - `data.js` holds all the content: cheer spots, schedule, maps, tips.
-- `app.js` renders it and works out the estimated pass times in the browser.
+- `app.js` renders it, works out the estimated pass times in the browser, and draws the interactive map (Leaflet + OpenStreetMap).
+- `course.js` is the marathon route for the map. It's hand-traced from the official course map and approximate.
 - `maps/` holds images of the official race PDFs.
 
 **This repo is public.** Don't add phone numbers, hotels, addresses or last names.
