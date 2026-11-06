@@ -7,7 +7,9 @@ This is a plain static site with no build step, published with GitHub Pages from
 - `data.js` holds all the content: the race-day plan, cheer spots, links and official maps. Three tabs: Plan, Map, Links.
 - `app.js` renders it, works out the estimated pass times in the browser, and draws the interactive map (Leaflet + OpenStreetMap).
 - `course.js` is the marathon route for the map. It's hand-traced from the official course map and approximate.
-- `maps/` holds images of the official race PDFs.
+- `maps/` holds images of the official race PDFs; `maps/thumbs/` has small 480px copies for the Links tab (regenerate with `sips -Z 480`).
+
+**When you change `app.js`, `data.js`, `course.js` or `style.css`, bump the `?v=` tag on them in `index.html`.** GitHub Pages lets browsers cache files for 10 minutes, so without the tag a phone can pair new HTML with an old script and break.
 
 **This repo is public.** Don't add phone numbers, hotels, addresses or last names.
 

@@ -171,7 +171,7 @@
     $("map-list").innerHTML = S.maps.map(function (m) {
       var img = "maps/" + m.file + ".jpg";
       return '<figure class="map-card"><a href="' + img + '" target="_blank" rel="noopener">' +
-        '<img src="' + img + '" alt="' + esc(m.title) + ' (official race map)" loading="lazy"></a>' +
+        '<img src="maps/thumbs/' + m.file + '.jpg" alt="' + esc(m.title) + ' (official race map)" loading="lazy"></a>' +
         '<figcaption><span>' + esc(m.title) + '</span><a href="' + esc(m.pdf) + '" target="_blank" rel="noopener">PDF</a></figcaption></figure>';
     }).join("");
   }
