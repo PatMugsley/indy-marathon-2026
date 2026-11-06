@@ -80,7 +80,8 @@ window.SITE = {
     { group: "Track the runners", items: [
       { title: "Live tracking (RTRT)", desc: "Search Jill, Anne or Belle. Updates at timing mats, so it lags a little.",
         url: "https://track.rtrt.me/e/BM-MONUMENTAL-MARATHON-2026" },
-      { title: "Beyond Monumental app", desc: "The official race app. Search “Beyond Monumental” in the App Store or Google Play." }
+      { title: "Official race app", desc: "Opens the Beyond Monumental app on your phone, or web tracking if you don't have it.",
+        url: "https://rtrt.me/ulink/BMA/BM-MONUMENTAL-MARATHON-2026" }
     ]},
     { group: "Official info", items: [
       { title: "Spectators & road closures", desc: "The race's page for spectators.",
