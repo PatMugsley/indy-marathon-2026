@@ -8,10 +8,10 @@ window.SITE = {
   timeZone: "America/Indiana/Indianapolis",
   runners: "Jill, Anne & Belle",
   wave: "F",
-  defaultWaveStart: "08:15", // ESTIMATE: Wave F release time not yet published
-  earliestPace: "9:00",      // "as early as" time, so nobody misses them
-  defaultPace: "11:00",      // expected pace
-  paceOptions: ["10:30", "11:00", "11:30", "12:00"],
+  waveStart: "08:15", // ESTIMATE: Wave F release time not yet published
+  // Every time on the site is a range: best case at fastPace, worst at slowPace.
+  fastPace: "9:00",
+  slowPace: "12:00",
 
   // false = the final crew plan isn't written yet, so the Plan tab shows a
   // "draft" note. Mirrors the "Final plan" in cheer-spots.md and the race-day
@@ -55,7 +55,7 @@ window.SITE = {
   ],
 
   // The race-day plan, in order. Either { spot: id, who, note } (time is
-  // computed from the spot's mile and the selected pace) or
+  // a range computed from the spot's mile at fastPace and slowPace) or
   // { time: "8:00", title, who, detail } for fixed-time steps, or { meet: true }.
   plan: [
     { spot: "sendoff", who: "Everyone" },

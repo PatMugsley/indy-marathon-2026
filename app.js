@@ -11,12 +11,6 @@
   S.spots.forEach(function (s, i) { s.n = i + 1; spotById[s.id] = s; });
   S.plan.forEach(function (it) { if (it.spot && it.who) spotById[it.spot].who = it.who; });
 
-  // Per-viewer settings. Storage may be unavailable (private mode etc.).
-  function load(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; } }
-  function save(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
-  var state = { pace: load("pace", S.defaultPace), waveStart: load("waveStart", S.defaultWaveStart) };
-  if (S.paceOptions.indexOf(state.pace) < 0) state.pace = S.defaultPace;
-  if (!/^\d{2}:\d{2}$/.test(state.waveStart)) state.waveStart = S.defaultWaveStart;
 
   // ---------- Time helpers (minutes since midnight, Indianapolis time) ----------
   function hmToMin(s) { var p = s.split(":"); return (+p[0]) * 60 + (+p[1]); }
@@ -27,13 +21,20 @@
     return h12 + ":" + (m < 10 ? "0" : "") + m + (withAmPm === false ? "" : (h < 12 ? " a.m." : " p.m."));
   }
   function paceMin(p) { var x = p.split(":"); return (+x[0]) + (+x[1]) / 60; }
-  function finishLabel(p) {
+  function duration(p) {
     var t = Math.round(paceMin(p) * 26.2);
     return Math.floor(t / 60) + ":" + (t % 60 < 10 ? "0" : "") + (t % 60);
   }
+  // Best case (fast pace) and worst case (slow pace) for a spot.
   function spotMinutes(spot, pace) {
     if (spot.fixedTime) return hmToMin(spot.fixedTime);
-    return hmToMin(state.waveStart) + spot.mile * paceMin(pace || state.pace);
+    return hmToMin(S.waveStart) + spot.mile * paceMin(pace);
+  }
+  function spotRange(s) { return [spotMinutes(s, S.fastPace), spotMinutes(s, S.slowPace)]; }
+  // "8:38–8:46 a.m." or "11:33 a.m.–12:39 p.m."
+  function rangeText(r) {
+    var a = fmtClock(r[0]).split(" "), b = fmtClock(r[1]).split(" ");
+    return a[1] === b[1] ? a[0] + "–" + b[0] + " " + b[1] : a.join(" ") + "–" + b.join(" ");
   }
   function indyNow() {
     var o = {};
@@ -48,7 +49,7 @@
 
   // Minutes for each plan step, so we can mark the next one on race day.
   function stepMinutes(it) {
-    if (it.spot) return spotMinutes(spotById[it.spot]);
+    if (it.spot) return spotRange(spotById[it.spot])[1]; // next until the worst-case time passes
     if (it.time) return hmToMin(it.time);
     if (it.meet && S.meetingSpot.time) return hmToMin(S.meetingSpot.time);
     return null;
@@ -74,18 +75,15 @@
       var i = nextStep();
       if (i >= 0 && S.plan[i].spot) {
         var s = spotById[S.plan[i].spot];
-        text = "Next: " + s.name + " · ~" + fmtClock(spotMinutes(s));
+        text = "Next: " + s.name + " · " + (s.fixedTime ? fmtClock(spotMinutes(s)) : rangeText(spotRange(s)));
       } else text = i >= 0 ? "Race day" : "Race day · thanks for cheering!";
     } else text = "Race complete · thanks for cheering!";
     el.innerHTML = '<strong>' + esc(S.runners) + '</strong><span>Wave ' + esc(S.wave) + ' · ' + esc(text) + '</span>';
   }
 
-  function renderPace() {
-    $("pace-chips").innerHTML = S.paceOptions.map(function (p) {
-      return '<button type="button" role="radio" aria-checked="' + (p === state.pace) + '" data-pace="' + p + '">' + p + '</button>';
-    }).join("");
-    $("pace-help").textContent = "per mile · about a " + finishLabel(state.pace) + " finish. “Early” times assume " +
-      S.earliestPace + "/mi, so you're in place before they could arrive.";
+  function renderPredicted() {
+    $("predicted").innerHTML = '<span class="p-label">Predicted finish time</span>' +
+      '<span class="p-value">' + duration(S.fastPace) + "–" + duration(S.slowPace) + '</span>';
   }
 
   // Clock time for the timeline: big h:mm with a small a.m./p.m.
@@ -97,8 +95,11 @@
   function spotStep(it, s, cls) {
     var time = s.fixedTime
       ? '<span class="t-main">' + clockHtml(spotMinutes(s)) + '</span>' + (s.until ? '<span class="t-early">to ' + s.until + '</span>' : "")
-      : '<span class="t-main">~' + clockHtml(spotMinutes(s)) + '</span>' +
-        '<span class="t-early">early ' + fmtClock(spotMinutes(s, S.earliestPace), false) + '</span>';
+      : (function (r) {
+          var a = fmtClock(r[0]).split(" "), b = fmtClock(r[1]).split(" ");
+          return '<span class="t-main">' + a[0] + '–' + b[0] + '</span>' +
+            '<span class="t-early">' + (a[1] === b[1] ? b[1] : a[1] + "–" + b[1]) + '</span>';
+        })(spotRange(s));
     return '<li class="step spot' + cls + '">' +
       '<div class="when">' + time + '</div>' +
       '<div class="body">' +
@@ -135,24 +136,7 @@
     $("rule").textContent = S.rule || "";
   }
 
-  function rerender() { renderStatus(); renderPace(); renderPlan(); refreshMap(); }
-
   function wirePlan() {
-    $("pace-chips").addEventListener("click", function (e) {
-      var b = e.target.closest("[data-pace]");
-      if (!b) return;
-      state.pace = b.getAttribute("data-pace");
-      save("pace", state.pace);
-      rerender();
-    });
-    var ws = $("wave-start");
-    ws.value = state.waveStart;
-    ws.addEventListener("change", function () {
-      if (!/^\d{2}:\d{2}$/.test(ws.value)) return;
-      state.waveStart = ws.value;
-      save("waveStart", state.waveStart);
-      rerender();
-    });
     $("timeline").addEventListener("click", function (e) {
       var b = e.target.closest("[data-show-spot]");
       if (b) pendingSpot = b.getAttribute("data-show-spot");
@@ -209,7 +193,7 @@
   function popup(s) {
     var t = s.fixedTime
       ? '<div class="pop-time">' + fmtClock(spotMinutes(s)).replace(" ", (s.until ? "–" + s.until + " " : " ")) + '</div>'
-      : '<div class="pop-time">~' + fmtClock(spotMinutes(s)) + '</div><div class="pop-early">Early ' + fmtClock(spotMinutes(s, S.earliestPace)) + ' · at ' + state.pace + '/mi</div>';
+      : '<div class="pop-time">' + rangeText(spotRange(s)) + '</div>';
     return '<div class="pop"><div class="pop-mile">' + mileLabel(s) + (s.who ? " · " + esc(s.who) : "") + '</div>' +
       '<div class="pop-name">' + s.n + '. ' + esc(s.name) + '</div>' + t +
       '<div class="pop-where">' + esc(s.where) + '</div>' +
@@ -250,16 +234,18 @@
   function refreshMap() {
     if (!map) return;
     S.spots.forEach(function (s) { markers[s.id].bindPopup(popup(s)); });
-    // On race day, show roughly where the runners should be at the selected pace.
-    var mile = null;
+    // On race day, show roughly where the runners are: between the slow-pace
+    // and fast-pace positions, with the pin at the midpoint.
+    var mile = null, lo = 0, hi = 0;
     if (isRaceDay()) {
-      var mm = (indyNow().min - hmToMin(state.waveStart)) / paceMin(state.pace);
-      if (mm >= 0 && mm <= 26.2) mile = mm;
+      var el = indyNow().min - hmToMin(S.waveStart);
+      lo = Math.max(0, el / paceMin(S.slowPace)); hi = Math.min(26.2, el / paceMin(S.fastPace));
+      if (el >= 0 && lo <= 26.2) mile = (lo + hi) / 2;
     }
     if (mile === null) { if (runnerMarker) { map.removeLayer(runnerMarker); runnerMarker = null; } return; }
     var ll = pointAtMile(mile);
-    var html = '<div class="pop"><div class="pop-name">Runners, roughly</div><div class="pop-where">About mile ' + mile.toFixed(1) +
-      ' at ' + state.pace + '/mi. An estimate: check live tracking.</div></div>';
+    var html = '<div class="pop"><div class="pop-name">Runners, roughly</div><div class="pop-where">Between mile ' + lo.toFixed(1) +
+      ' and ' + hi.toFixed(1) + '. Check live tracking.</div></div>';
     if (!runnerMarker) runnerMarker = L.marker(ll, { icon: pinIcon("🏃", "runner"), zIndexOffset: 2000 }).addTo(map);
     runnerMarker.setLatLng(ll).bindPopup(html);
   }
@@ -308,7 +294,7 @@
     if (t === "map") showMap();
   }
 
-  renderStatus(); renderPace(); renderPlan(); renderLinks();
+  renderStatus(); renderPredicted(); renderPlan(); renderLinks();
   wirePlan(); wireMap();
   window.addEventListener("hashchange", route);
   route();
