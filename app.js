@@ -82,53 +82,59 @@
   }
 
   function renderPredicted() {
-    $("predicted").innerHTML = '<span class="p-label">Predicted finish time</span>' +
+    $("predicted").innerHTML = '<span class="p-label">Predicted total marathon time</span>' +
       '<span class="p-value">' + duration(S.fastPace) + "–" + duration(S.slowPace) + '</span>';
   }
 
-  // Clock time for the timeline: big h:mm with a small a.m./p.m.
-  function clockHtml(min) {
-    var t = fmtClock(min).split(" ");
-    return t[0] + '<span class="ap"> ' + t[1] + '</span>';
+  // Time block for the left of a row: big h:mm (or a range) over a small a.m./p.m.
+  function timeBlock(main, sub) {
+    return '<span class="when"><span class="t-main">' + main + '</span>' + (sub ? '<span class="t-sub">' + sub + '</span>' : "") + '</span>';
   }
-  function whoHtml(who) { return who ? '<span class="who">' + esc(who) + '</span>' : ""; }
-  function spotStep(it, s, cls) {
-    var time = s.fixedTime
-      ? '<span class="t-main">' + clockHtml(spotMinutes(s)) + '</span>' + (s.until ? '<span class="t-early">to ' + s.until + '</span>' : "")
-      : (function (r) {
-          var a = fmtClock(r[0]).split(" "), b = fmtClock(r[1]).split(" ");
-          return '<span class="t-main">' + a[0] + '–' + b[0] + '</span>' +
-            '<span class="t-early">' + (a[1] === b[1] ? b[1] : a[1] + "–" + b[1]) + '</span>';
-        })(spotRange(s));
-    return '<li class="step spot' + cls + '">' +
-      '<div class="when">' + time + '</div>' +
-      '<div class="body">' +
-        '<p class="mile">' + mileLabel(s) + whoHtml(it.who) + '</p>' +
-        '<div class="head"><span class="num">' + s.n + '</span><h3>' + esc(s.name) + '</h3></div>' +
-        '<p class="where">' + esc(s.where) + '</p>' +
-        ((it.note || s.note) ? '<p class="note">' + esc(it.note || s.note) + '</p>' : "") +
-        '<div class="actions"><a href="' + mapsLink(s.map) + '" target="_blank" rel="noopener">Directions ↗</a>' +
-        '<a href="#map" data-show-spot="' + s.id + '">On our map</a></div>' +
-      '</div></li>';
+  function clockParts(min) { return fmtClock(min).split(" "); }
+  function spotTime(s) {
+    if (s.fixedTime) {
+      var f = clockParts(spotMinutes(s));
+      return timeBlock(f[0] + (s.until ? "–" + s.until : ""), f[1]);
+    }
+    var r = spotRange(s), a = clockParts(r[0]), b = clockParts(r[1]);
+    return timeBlock(a[0] + "–" + b[0], a[1] === b[1] ? b[1] : a[1] + "–" + b[1]);
+  }
+  // One row of the plan: a <details> dropdown. The summary is the at-a-glance
+  // line (time, name, who); the body has where, notes and links.
+  function row(cls, open, time, badge, title, sub, body) {
+    return '<li><details class="item' + cls + '"' + (open ? " open" : "") + '><summary>' + time +
+      '<span class="what"><span class="title">' + badge + '<span>' + esc(title) + '</span></span>' +
+      (sub ? '<span class="sub">' + sub + '</span>' : "") + '</span>' +
+      '<span class="chev" aria-hidden="true"></span></summary>' +
+      '<div class="detail">' + body + '</div></details></li>';
+  }
+  function actions(map, id) {
+    return '<div class="actions">' + (map ? '<a href="' + mapsLink(map) + '" target="_blank" rel="noopener">Directions ↗</a>' : "") +
+      (id ? '<a href="#map" data-show-spot="' + id + '">On our map</a>' : "") + '</div>';
   }
 
   function renderPlan() {
     var next = nextStep(), raceDay = isRaceDay();
     $("timeline").innerHTML = S.plan.map(function (it, i) {
-      var cls = (i === next ? " is-next" : "") + (raceDay && (next < 0 ? indyNow().min > hmToMin("13:00") : i < next) ? " passed" : "");
-      if (it.spot) return spotStep(it, spotById[it.spot], cls);
-      if (it.meet) {
-        var m = S.meetingSpot;
-        return '<li class="step meet' + cls + '"><div class="when"><span class="t-main">' + (m.time ? "~" + clockHtml(hmToMin(m.time)) : "After") + '</span></div><div class="body">' +
-          '<p class="mile">Meet up' + whoHtml("Everyone + runners") + '</p>' +
-          '<div class="head"><span class="num star">★</span><h3>' + esc(m.name) + '</h3></div>' +
-          (m.where ? '<p class="where">' + esc(m.where) + '</p>' : "") + '<p class="note">' + esc(m.detail) + '</p>' +
-          '<div class="actions">' + (m.map ? '<a href="' + mapsLink(m.map) + '" target="_blank" rel="noopener">Directions ↗</a>' : "") +
-          (m.latlng ? '<a href="#map" data-show-spot="meet">On our map</a>' : "") + '</div>' +
-          '</div></li>';
+      var isNext = i === next;
+      var cls = (isNext ? " is-next" : "") + (raceDay && (next < 0 ? indyNow().min > hmToMin("13:00") : i < next) ? " passed" : "");
+      if (it.spot) {
+        var s = spotById[it.spot];
+        return row(" spot" + cls, isNext, spotTime(s), '<span class="num">' + s.n + '</span>', s.name,
+          [s.name.indexOf(mileLabel(s)) === 0 ? "" : mileLabel(s), it.who || ""].filter(Boolean).map(esc).join(" · "),
+          '<p class="where">' + esc(s.where) + '</p>' +
+          ((it.note || s.note) ? '<p class="note">' + esc(it.note || s.note) + '</p>' : "") + actions(s.map, s.id));
       }
-      return '<li class="step fixed' + cls + '"><div class="when"><span class="t-main">' + clockHtml(hmToMin(it.time)) + '</span></div>' +
-        '<div class="body">' + (it.who ? '<p class="mile">' + whoHtml(it.who) + '</p>' : "") + '<h3>' + esc(it.title) + '</h3>' + (it.detail ? '<p class="note">' + esc(it.detail) + '</p>' : "") + '</div></li>';
+      if (it.meet) {
+        var m = S.meetingSpot, mt = m.time ? clockParts(hmToMin(m.time)) : ["After", ""];
+        return row(" meet" + cls, isNext, timeBlock((m.time ? "~" : "") + mt[0], mt[1]), '<span class="num star">★</span>', m.name,
+          "Meet up · Everyone + runners",
+          (m.where ? '<p class="where">' + esc(m.where) + '</p>' : "") + '<p class="note">' + esc(m.detail) + '</p>' +
+          actions(m.map, m.latlng ? "meet" : ""));
+      }
+      var t = clockParts(hmToMin(it.time));
+      return row(" fixed" + cls, isNext, timeBlock(t[0], t[1]), "", it.title, it.who ? esc(it.who) : "",
+        it.detail ? '<p class="note">' + esc(it.detail) + '</p>' : '<p class="note">No details.</p>');
     }).join("");
     var d = $("draft");
     d.hidden = !!S.planFinal;
