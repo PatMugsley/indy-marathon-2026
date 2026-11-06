@@ -71,7 +71,7 @@ h2 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; margin: 28px 0 1
 .timeline { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .item { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .item summary {
-  display: grid; grid-template-columns: 104px 1fr 20px; align-items: center; gap: 12px;
+  display: grid; grid-template-columns: 114px 1fr 20px; align-items: center; gap: 10px;
   padding: 12px 14px; cursor: pointer; list-style: none; -webkit-tap-highlight-color: transparent;
 }
 .item summary::-webkit-details-marker { display: none; }
@@ -160,5 +160,5 @@ body[data-view="map"] main { padding-top: 12px; }
   .course-map { height: calc(100vh - 250px); }
 }
 @media (max-width: 360px) {
-  .item summary { grid-template-columns: 96px 1fr 16px; gap: 10px; padding: 12px; }
+  .item summary { grid-template-columns: 108px 1fr 16px; gap: 8px; padding: 12px; }
 }
