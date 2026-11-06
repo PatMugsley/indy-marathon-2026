@@ -10,9 +10,11 @@ window.COURSE = [
   [39.75642, -86.15488, 1],      // McCarty St at Delaware St
   [39.76137, -86.15470],         // Delaware St at South St
   [39.76124, -86.14927],         // South St at Virginia Ave
-  [39.76580, -86.15330, 2],      // Virginia Ave at Maryland St
-  [39.76730, -86.15470],         // Delaware St at Washington St
-  [39.77120, -86.15470],         // Delaware St at New York St
+  [39.76580, -86.15330, 2],      // Virginia Ave at Maryland St, turning west
+  [39.76580, -86.15810],         // Maryland St at Meridian St, turning north
+  [39.76850, -86.15750],         // Around Monument Circle
+  [39.77120, -86.15810],         // Meridian St at New York St, turning east
+  [39.77120, -86.15560],         // New York St at Pennsylvania St
   [39.77120, -86.15170],         // New York St at Alabama St
   [39.77380, -86.15170, 3],      // Alabama St at Mass Ave
   [39.78150, -86.14130, 4],      // Mass Ave at 10th St / Bellefontaine

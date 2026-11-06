@@ -4,102 +4,61 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#1d3b72">
-<title>Team Jill · Indy Marathon</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Race-day cheer plan for the Indianapolis Monumental Marathon, Saturday, Nov 7, 2026.">
+<title>Monumental Marathon · Cheer Plan</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="top">
-  <div class="eyebrow">Indy Monumental Marathon · Sat, Nov 7</div>
-  <h1>Team Jill</h1>
+  <div class="wrap">
+    <p class="eyebrow">Monumental Marathon · Sat, Nov 7</p>
+    <h1>Cheer Plan</h1>
+  </div>
+  <nav class="tabs wrap" aria-label="Sections">
+    <a href="#plan" data-tab="plan">Plan</a>
+    <a href="#map" data-tab="map">Map</a>
+    <a href="#links" data-tab="links">Links</a>
+  </nav>
 </header>
 
-<main>
-  <section id="view-home" class="view">
-    <div class="countdown card accent" id="countdown"></div>
-    <div class="next card" id="next-up" hidden></div>
-    <div class="big-buttons">
-      <a class="big-btn primary" id="track-btn" target="_blank" rel="noopener">
-        <span class="big-label">Track the runners</span>
-        <span class="big-sub">Search Jill, Anne or Belle</span>
-      </a>
-      <a class="big-btn" href="#spots"><span class="big-label">Where to cheer</span><span class="big-sub">Spots & estimated times</span></a>
-      <a class="big-btn" href="#map"><span class="big-label">Course map</span><span class="big-sub">See every spot on the route</span></a>
-      <a class="big-btn" href="#maps"><span class="big-label">Official maps</span><span class="big-sub">Closures, parking, race morning</span></a>
-    </div>
-    <div class="card meet" id="meet"></div>
-    <h2>Race morning</h2>
-    <ol class="timeline" id="raceday"></ol>
-  </section>
+<main class="wrap">
+  <section id="view-plan" class="view">
+    <div class="status" id="status"></div>
 
-  <section id="view-spots" class="view" hidden>
-    <h2>Where to cheer</h2>
-    <div class="note"><strong>Times are estimates.</strong> They assume the three run together at an even pace from the start time below. Plan to arrive by the “as early as” time. On race day, the tracking app is the best guide.</div>
-    <div class="controls card">
-      <div class="ctl">
-        <span class="ctl-label">Expected pace (per mile)</span>
-        <div class="chips" id="pace-chips" role="radiogroup" aria-label="Expected pace per mile"></div>
-        <span class="ctl-help" id="pace-finish"></span>
+    <div class="pace">
+      <div class="pace-row">
+        <span class="pace-label">Pace</span>
+        <div class="seg" id="pace-chips" role="radiogroup" aria-label="Expected pace per mile"></div>
       </div>
-      <label class="ctl">
-        <span class="ctl-label">Wave F starts at <small>(estimate)</small></span>
+      <p class="pace-help" id="pace-help"></p>
+      <label class="wave"><span>Wave F starts<small>Estimate, not yet published</small></span>
         <input type="time" id="wave-start" step="60">
       </label>
     </div>
-    <ul class="spot-list" id="spot-list"></ul>
+
+    <p class="draft" id="draft" hidden></p>
+    <ol class="timeline" id="timeline"></ol>
+    <p class="rule" id="rule"></p>
   </section>
 
   <section id="view-map" class="view" hidden>
-    <h2>Course map</h2>
-    <p class="lead">Tap a numbered pin for its estimated times. The blue line is the marathon route, traced by hand from the official map, so it's close but not exact.</p>
     <div id="course-map" class="course-map" role="region" aria-label="Interactive course map"></div>
-    <div class="note" id="map-fallback" hidden>The map couldn't load. Check your connection, or use the <a href="#maps">official maps</a>.</div>
-    <div class="btn-row map-actions">
-      <button type="button" class="btn" id="locate-btn">Show where I am</button>
-      <button type="button" class="btn secondary" id="fit-btn">Whole course</button>
+    <p class="fallback" id="map-fallback" hidden>The map couldn't load. Try the <a href="#links">official maps</a>.</p>
+    <div class="map-actions">
+      <button type="button" class="btn ghost" id="fit-btn">Whole course</button>
+      <button type="button" class="btn ghost" id="locate-btn">Where am I?</button>
     </div>
-    <ul class="legend plain">
-      <li><span class="pin legend-pin"><span>1</span></span> Cheer spot (numbers match the Spots tab)</li>
-      <li><span class="mile-dot legend-dot">5</span> Mile marker</li>
-      <li><span class="pin runner legend-pin"><span>🏃</span></span> On race day: roughly where the runners should be</li>
-    </ul>
+    <p class="fine">Tap a pin for estimated times. The route is traced by hand from the official map: close, not exact.</p>
   </section>
 
-  <section id="view-runners" class="view" hidden>
-    <h2>Our runners</h2>
-    <p class="lead">All three are running the full marathon together in <strong>Wave F</strong>, at about 11 minutes a mile.</p>
-    <div id="runner-list"></div>
-    <div class="note">Tracking updates when runners cross timing mats (every few miles), not live GPS, so it lags a little. You can also use the official app: search <strong>“Beyond Monumental”</strong> in the App Store or Google Play.</div>
-  </section>
-
-  <section id="view-maps" class="view" hidden>
+  <section id="view-links" class="view" hidden>
+    <div id="links-list"></div>
     <h2>Official maps</h2>
-    <p class="lead">Tap a map to open it full size, then pinch to zoom.</p>
-    <div id="map-list"></div>
-  </section>
-
-  <section id="view-info" class="view" hidden>
-    <h2>Weekend schedule</h2>
-    <div id="schedule"></div>
-    <h2>What to bring</h2>
-    <ul class="checks" id="bring"></ul>
-    <h2>Getting around</h2>
-    <ul class="plain" id="getting-around"></ul>
-    <h2>Course rules for spectators</h2>
-    <ul class="plain" id="rules"></ul>
-    <p><a class="text-link" id="spectator-link" target="_blank" rel="noopener">Official spectator info ↗</a></p>
+    <div class="maps-grid" id="map-list"></div>
   </section>
 </main>
-
-<nav class="tabbar" aria-label="Sections">
-  <a href="#home" data-tab="home"><span class="ico" aria-hidden="true">⌂</span>Home</a>
-  <a href="#spots" data-tab="spots"><span class="ico" aria-hidden="true">📣</span>Spots</a>
-  <a href="#map" data-tab="map"><span class="ico" aria-hidden="true">📍</span>Map</a>
-  <a href="#runners" data-tab="runners"><span class="ico" aria-hidden="true">🏃</span>Runners</a>
-  <a href="#maps" data-tab="maps"><span class="ico" aria-hidden="true">🗺️</span>Official</a>
-  <a href="#info" data-tab="info"><span class="ico" aria-hidden="true">ℹ︎</span>Info</a>
-</nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
